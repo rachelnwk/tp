@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,9 +23,10 @@ import seedu.bob.exception.CommandException;
 class ParserPreparationTest {
 
     private final ByteArrayOutputStream output = new ByteArrayOutputStream();
-    private final Parser parser = new Parser();
+    private final Parser parser = new Parser(new Scanner(""));
     private final Inventory inventory = new Inventory();
     private final SessionManager sessions = new SessionManager();
+    private final ContactManager contacts = new ContactManager();
     private PrintStream originalOutput;
     private PrintStream capturedOutput;
 
@@ -124,7 +126,7 @@ class ParserPreparationTest {
      */
     private String execute(String command) {
         output.reset();
-        parser.handleCommand(command, inventory, sessions);
+        parser.handleCommand(command, inventory, sessions, contacts);
         return output.toString(StandardCharsets.UTF_8).replace("\r\n", "\n");
     }
 }

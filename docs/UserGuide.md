@@ -4,7 +4,7 @@ Bob is a command-line application for lab technicians to manage inventory, sched
 materials for each session. Preparation uses the session's headcount to calculate required quantities and compare
 them with the inventory.
 
-**Data is kept only while Bob is running.** Exiting or restarting clears all inventory, sessions, and preparations.
+**Data is kept only while Bob is running.** Exiting or restarting clears all inventory, sessions, preparations, and contacts.
 
 ## Contents
 
@@ -13,6 +13,7 @@ them with the inventory.
 - [Inventory management](#inventory-management)
 - [Lab session scheduling](#lab-session-scheduling)
 - [Lab session preparation](#lab-session-preparation)
+- [Contact management](#contact-management)
 - [Exiting Bob](#exiting-bob)
 - [Errors and troubleshooting](#errors-and-troubleshooting)
 - [Current limitations](#current-limitations)
@@ -362,6 +363,94 @@ Lab preparation: Practice Lab on 8 October 2099 at Room-A from 0900 to 1000 for 
 --------------------------------------------------------------------
 ```
 
+## Contact management
+
+Contacts record who to call for supplies or repairs, such as a component supplier or a maintenance office.
+
+### Add a contact: `add-c`
+
+Adds a contact to the contact list. Name and telephone are required; email and role are optional but must be given
+in the order shown.
+
+**Format:** `add-c n/NAME t/TELEPHONE [e/EMAIL] [r/ROLE]`
+
+- `TELEPHONE` must contain digits only, with no length limit. Spaces, `+`, and `-` are not accepted, so write
+  `6561234567` rather than `+65 6123 4567`.
+- `EMAIL` is only checked loosely: it must contain an `@` and no spaces. It is not checked against real addresses.
+- `NAME`, `TELEPHONE`, and any `e/` or `r/` value you include must not be blank. Leave the whole prefix out instead.
+- Duplicates are allowed. Adding the same name or number twice creates two separate contacts.
+- A word in a value that is a single letter followed by `/` (for example `a/b`) is read as a new prefix, so the
+  command is rejected as invalid format. Words such as `and/or` are fine.
+
+```text
+add-c n/NUS Infrastructure t/65161234 r/Aircon and lighting repairs
+add-c n/Component Supplier t/91234567 e/supplier@example.com r/Resistors, LEDs, wires
+```
+
+Expected output:
+
+```text
+Successfully added: NUS Infrastructure (65161234) to contacts.
+Successfully added: Component Supplier (91234567) to contacts.
+```
+
+### List contacts: `list-c`
+
+Displays all contacts with their indices, in insertion order. No arguments are accepted.
+
+**Format:** `list-c`
+
+```text
+--------------------------------------------------------------------
+Contacts
+--------------------------------------------------------------------
+1. NUS Infrastructure (65161234) - Aircon and lighting repairs
+2. Component Supplier (91234567, supplier@example.com) - Resistors, LEDs, wires
+--------------------------------------------------------------------
+```
+
+An empty list displays `No contacts saved.` between the heading and the closing divider.
+
+### Delete a contact: `delete-c`
+
+Deletes contacts interactively. Bob shows the contact list and asks for an index. Each index you enter deletes that
+contact and redisplays the renumbered list. An invalid index shows an error and Bob keeps asking. Type `done` to
+finish. If there are no contacts, Bob shows the empty list and does not prompt.
+
+**Format:** `delete-c`
+
+```text
+delete-c
+```
+
+Expected output:
+
+```text
+--------------------------------------------------------------------
+Contacts
+--------------------------------------------------------------------
+1. NUS Infrastructure (65161234) - Aircon and lighting repairs
+2. Component Supplier (91234567, supplier@example.com) - Resistors, LEDs, wires
+--------------------------------------------------------------------
+
+Please enter the index of the contact to delete
+(type "done" to exit):
+```
+
+Entering `1`:
+
+```text
+Successfully removed: NUS Infrastructure from contacts.
+
+--------------------------------------------------------------------
+Contacts
+--------------------------------------------------------------------
+1. Component Supplier (91234567, supplier@example.com) - Resistors, LEDs, wires
+--------------------------------------------------------------------
+```
+
+Entering `done` returns to the normal command prompt.
+
 ## Exiting Bob
 
 Enter `Bye` on its own line. The spelling is case-insensitive, so `bye` and `BYE` also work.
@@ -386,6 +475,8 @@ These are examples of the current messages:
 | Invalid start or end time | `Start time must be a valid time in HHmm format.` or `End time must be a valid time in HHmm format.` | Use four digits, such as `0900`, with no colon. |
 | End time at or before start time | `Start time must be earlier than end time.` | Choose a later end time on the same day. |
 | Overlapping session at the same location | `Session conflicts with "Practice Lab" at Room-A on 8 October 2099 from 0900 to 1000.` | Change the date, location, or time range. |
+| Invalid contact value | `Telephone must contain digits only.` or `Email must be a valid address, e.g. name@example.com.` | Correct the value after the prefix. |
+| Unknown contact index | `Contact index 2 is invalid. There are 1 contact(s).` | Use `list-c` to check the index. |
 | Duplicate inventory item | `Item "Wire" already exists in category "Components".` | Do not use `add-i` to top up an existing item. |
 | Unknown inventory category | `Category "Unknown" does not exist.` | Check the category using `list-i`. |
 | Removal exceeds stock | `Cannot remove 20 Wire. Only 15 are available.` | Remove no more than the available quantity. |
@@ -448,4 +539,7 @@ Not in the current version. Bob has no save or import function; a new launch sta
 | Add a preparation requirement | `add-p s/SESSION_INDEX i/ITEM_NAME c/CATEGORY [q/QUANTITY_PER_PERSON]` |
 | Remove preparation units | `delete-p s/SESSION_INDEX i/ITEM_INDEX q/TOTAL_QUANTITY` |
 | List a session's preparation | `list-p s/SESSION_INDEX` |
+| Add a contact | `add-c n/NAME t/TELEPHONE [e/EMAIL] [r/ROLE]` |
+| Delete contacts (interactive) | `delete-c` |
+| List contacts | `list-c` |
 | Exit and discard data | `Bye` |

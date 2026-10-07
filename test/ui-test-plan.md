@@ -2256,6 +2256,323 @@ Lab preparation: First Lab on {{TOMORROW}} at Room-A from 0900 to 1000 for 10 at
 --------------------------------------------------------------------
 ```
 
+### UI-CONTACT-001: Add and list contacts
+
+**Aim:** Verify that contacts with and without optional fields are confirmed and listed in insertion order.
+
+**Preconditions:** Empty contact list.
+
+#### Step 1
+
+**Input**
+
+```text
+list-c
+```
+
+**Expected output**
+
+```text
+--------------------------------------------------------------------
+Contacts
+--------------------------------------------------------------------
+No contacts saved.
+--------------------------------------------------------------------
+```
+
+#### Step 2
+
+**Input**
+
+```text
+add-c n/NUS Infrastructure t/65161234 r/Aircon and lighting repairs
+```
+
+**Expected output**
+
+```text
+Successfully added: NUS Infrastructure (65161234) to contacts.
+```
+
+#### Step 3
+
+**Input**
+
+```text
+add-c n/Component Supplier t/91234567 e/supplier@example.com r/Resistors, LEDs, wires
+```
+
+**Expected output**
+
+```text
+Successfully added: Component Supplier (91234567) to contacts.
+```
+
+#### Step 4
+
+**Input**
+
+```text
+list-c
+```
+
+**Expected output**
+
+```text
+--------------------------------------------------------------------
+Contacts
+--------------------------------------------------------------------
+1. NUS Infrastructure (65161234) - Aircon and lighting repairs
+2. Component Supplier (91234567, supplier@example.com) - Resistors, LEDs, wires
+--------------------------------------------------------------------
+```
+
+
+### UI-CONTACT-002: Reject invalid add-c commands
+
+**Aim:** Verify malformed prefixes and invalid values are rejected without changing the contact list.
+
+**Preconditions:** Empty contact list.
+
+#### Step 1
+
+**Input**
+
+```text
+add-c n/Bob
+```
+
+**Expected output**
+
+```text
+Invalid format. Use: add-c n/NAME t/TELEPHONE [e/EMAIL] [r/ROLE]
+```
+
+#### Step 2
+
+**Input**
+
+```text
+add-c n/Bob t/91234567 r/Role e/a@b.com
+```
+
+**Expected output**
+
+```text
+Invalid format. Use: add-c n/NAME t/TELEPHONE [e/EMAIL] [r/ROLE]
+```
+
+#### Step 3
+
+**Input**
+
+```text
+add-c n/ t/91234567
+```
+
+**Expected output**
+
+```text
+Contact name cannot be blank.
+```
+
+#### Step 4
+
+**Input**
+
+```text
+add-c n/Bob t/abc
+```
+
+**Expected output**
+
+```text
+Telephone must contain digits only.
+```
+
+#### Step 5
+
+**Input**
+
+```text
+add-c n/Bob t/91234567 e/nope
+```
+
+**Expected output**
+
+```text
+Email must be a valid address, e.g. name@example.com.
+```
+
+#### Step 6
+
+**Input**
+
+```text
+list-c
+```
+
+**Expected output**
+
+```text
+--------------------------------------------------------------------
+Contacts
+--------------------------------------------------------------------
+No contacts saved.
+--------------------------------------------------------------------
+```
+
+
+### UI-CONTACT-003: Delete contacts and shift indices
+
+**Aim:** Verify delete-c removes the chosen contact, rejects invalid indices, and renumbers the rest.
+
+**Preconditions:** Empty contact list.
+
+#### Step 1
+
+**Input**
+
+```text
+add-c n/First t/11111111
+```
+
+**Expected output**
+
+```text
+Successfully added: First (11111111) to contacts.
+```
+
+#### Step 2
+
+**Input**
+
+```text
+add-c n/Second t/22222222
+```
+
+**Expected output**
+
+```text
+Successfully added: Second (22222222) to contacts.
+```
+
+#### Step 3
+
+**Input**
+
+```text
+delete-c 1
+```
+
+**Expected output**
+
+```text
+Invalid format. Use: delete-c
+```
+
+#### Step 4
+
+**Input**
+
+```text
+delete-c
+```
+
+**Expected output**
+
+```text
+--------------------------------------------------------------------
+Contacts
+--------------------------------------------------------------------
+1. First (11111111)
+2. Second (22222222)
+--------------------------------------------------------------------
+
+Please enter the index of the contact to delete
+(type "done" to exit):
+```
+
+#### Step 5
+
+**Input**
+
+```text
+abc
+```
+
+**Expected output**
+
+```text
+Contact index must be a positive integer.
+```
+
+#### Step 6
+
+**Input**
+
+```text
+3
+```
+
+**Expected output**
+
+```text
+Contact index 3 is invalid. There are 2 contact(s).
+```
+
+#### Step 7
+
+**Input**
+
+```text
+1
+```
+
+**Expected output**
+
+```text
+Successfully removed: First from contacts.
+
+--------------------------------------------------------------------
+Contacts
+--------------------------------------------------------------------
+1. Second (22222222)
+--------------------------------------------------------------------
+```
+
+#### Step 8
+
+**Input**
+
+```text
+done
+```
+
+**Expected output**
+
+```text
+```
+
+#### Step 9
+
+**Input**
+
+```text
+list-c
+```
+
+**Expected output**
+
+```text
+--------------------------------------------------------------------
+Contacts
+--------------------------------------------------------------------
+1. Second (22222222)
+--------------------------------------------------------------------
+```
+
+
 <!--
 ### UI-001: Short title
 

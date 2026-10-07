@@ -26,9 +26,10 @@ public class Bob {
         System.out.println("Hello " + in.nextLine() + ", welcome to Bob!");
         System.out.println(Ui.DIVIDER);
 
-        Parser parser = new Parser();
+        Parser parser = new Parser(in);
         Inventory inventory = new Inventory();
         SessionManager sessionManager = new SessionManager();
+        ContactManager contactManager = new ContactManager();
         String line;
 
         do {
@@ -36,7 +37,7 @@ public class Bob {
             if (line.trim().equalsIgnoreCase("Bye")) {
                 break;
             }
-            parser.handleCommand(line, inventory, sessionManager);
+            parser.handleCommand(line, inventory, sessionManager, contactManager);
             System.out.println();
         } while (true);
     }
